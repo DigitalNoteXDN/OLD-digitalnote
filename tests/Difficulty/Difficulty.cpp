@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
         }
         uint64_t res = currency.nextDifficulty(
             vector<uint64_t>(timestamps.begin() + begin, timestamps.begin() + end),
-            vector<uint64_t>(cumulative_difficulties.begin() + begin, cumulative_difficulties.begin() + end));
+            vector<uint64_t>(cumulative_difficulties.begin() + begin, cumulative_difficulties.begin() + end), n);
         if (res != difficulty) {
             cerr << "Wrong difficulty for block " << n << endl
                 << "Expected: " << difficulty << endl

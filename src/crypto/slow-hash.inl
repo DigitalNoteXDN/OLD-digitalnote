@@ -9,7 +9,7 @@ cn_slow_hash_aesni
 #else
 cn_slow_hash_noaesni
 #endif
-(void *restrict context, const void *restrict data, size_t length, void *restrict hash)
+(void *restrict context, const void *restrict data, size_t length, void *restrict hash, int variant)
 {
 #define ctx ((struct cn_ctx *) context)
   ALIGNED_DECL(uint8_t ExpandedKey[256], 16);
@@ -19,6 +19,7 @@ cn_slow_hash_noaesni
   hash_process(&ctx->state.hs, (const uint8_t*) data, length);
 
   memcpy(ctx->text, ctx->state.init, INIT_SIZE_BYTE);
+  VARIANT1_INIT64();
 #if defined(AESNI)
   memcpy(ExpandedKey, ctx->state.hs.b, AES_KEY_SIZE);
   ExpandAESKey256(ExpandedKey);
@@ -98,6 +99,7 @@ cn_slow_hash_noaesni
 
     b_x = _mm_xor_si128(b_x, c_x);
     _mm_store_si128((__m128i *)&ctx->long_state[a[0] & 0x1FFFF0], b_x);
+	VARIANT1_1(&ctx->long_state[a[0] & 0x1FFFF0]);
 
     nextblock = (uint64_t *)&ctx->long_state[c[0] & 0x1FFFF0];
     b[0] = nextblock[0];
@@ -127,6 +129,7 @@ cn_slow_hash_noaesni
 
     a[0] ^= b[0];
     a[1] ^= b[1];
+	VARIANT1_2(dst + 1);
     b_x = c_x;
     //__builtin_prefetch(&ctx->long_state[a[0] & 0x1FFFF0], 0, 3);
   }

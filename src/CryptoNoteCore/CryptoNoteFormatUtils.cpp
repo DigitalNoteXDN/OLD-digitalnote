@@ -488,7 +488,17 @@ bool get_block_longhash(cn_context &context, const Block& b, Hash& res) {
   } else {
     return false;
   }
-  cn_slow_hash(context, bd.data(), bd.size(), res);
+  //explicit PoW change (cryptonightv1) for V5+ blocks
+  int cn_variant;
+  if (b.majorVersion < 5)
+  {
+	  cn_variant = 0;
+  }
+  else
+  {
+	  cn_variant = 1;
+  }
+  cn_slow_hash(context, bd.data(), bd.size(), res, cn_variant);
   return true;
 }
 

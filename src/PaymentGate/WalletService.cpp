@@ -518,6 +518,8 @@ std::error_code WalletService::createAddress(const std::string& spendSecretKeyTe
 
     logger(Logging::DEBUGGING) << "Creating address";
 
+	saveWallet();
+
     Crypto::SecretKey secretKey;
     if (!Common::podFromHex(spendSecretKeyText, secretKey)) {
       logger(Logging::WARNING) << "Wrong key format: " << spendSecretKeyText;
@@ -540,6 +542,8 @@ std::error_code WalletService::createAddress(std::string& address) {
     System::EventLock lk(readyEvent);
 
     logger(Logging::DEBUGGING) << "Creating address";
+
+	saveWallet();
 
     address = wallet.createAddress();
   } catch (std::system_error& x) {
@@ -835,6 +839,8 @@ std::error_code WalletService::sendTransaction(const SendTransaction::Request& r
 
     size_t transactionId = wallet.transfer(sendParams);
     transactionHash = Common::podToHex(wallet.getTransaction(transactionId).hash);
+
+	saveWallet();
 
     logger(Logging::DEBUGGING) << "Transaction " << transactionHash << " has been sent";
   } catch (std::system_error& x) {

@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <initializer_list>
+#include <map>
 
 namespace CryptoNote {
 namespace parameters {
@@ -16,9 +17,9 @@ const size_t   CRYPTONOTE_MAX_BLOCK_BLOB_SIZE                = 500000000;
 const size_t   CRYPTONOTE_MAX_TX_SIZE                        = 1000000000;
 const uint64_t CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX       = 0xDB; // addresses start with "0xDB"
 const size_t   CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW          = 6;
-const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT            = 60 * 60 * 2;
 
 const size_t   BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW             = 30;
+const size_t   BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V1          = 11;  //jagerman's patch
 
 const uint64_t MONEY_SUPPLY                                  = UINT64_C(858986905600000000);
 
@@ -32,11 +33,15 @@ const uint64_t COIN                                          = UINT64_C(10000000
 const uint64_t MINIMUM_FEE                                   = UINT64_C(100000);     // pow(10, 5)
 const uint64_t DEFAULT_DUST_THRESHOLD                        = UINT64_C(100000);     // pow(10, 5)
 
-const uint64_t DIFFICULTY_TARGET                             = 240; // seconds
+//const uint64_t DIFFICULTY_TARGET                           = 240; // pre-LWMA value
+const uint64_t DIFFICULTY_TARGET                             = 120; // LWMA
+const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT            = 60 * 60 * 2;
+const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V1         = 3 * DIFFICULTY_TARGET;  //LWMA
 const uint64_t EXPECTED_NUMBER_OF_BLOCKS_PER_DAY             = 24 * 60 * 60 / DIFFICULTY_TARGET;
 const size_t   DIFFICULTY_WINDOW                             = 240; // blocks
+const size_t   DIFFICULTY_WINDOW_V1                          = 60; // LWMA
 const size_t   DIFFICULTY_CUT                                = 30;  // timestamps to cut after sorting
-const size_t   DIFFICULTY_LAG                                = 15;
+const size_t   DIFFICULTY_LAG                                = 15;  // not used in LWMA
 static_assert(2 * DIFFICULTY_CUT <= DIFFICULTY_WINDOW - 2, "Bad DIFFICULTY_WINDOW or DIFFICULTY_CUT");
 
 const uint64_t DEPOSIT_MIN_AMOUNT                            = 150 * COIN;
@@ -66,6 +71,7 @@ const size_t   FUSION_TX_MIN_IN_OUT_COUNT_RATIO              = 4;
 const uint32_t UPGRADE_HEIGHT_V2                             = 136212;
 const uint32_t UPGRADE_HEIGHT_V3                             = 317950;
 const uint32_t UPGRADE_HEIGHT_V4                             = 338000;
+const uint32_t UPGRADE_HEIGHT_V5                             = 668682;  //June 24 12AM CST (6AM UTC)
 const unsigned UPGRADE_VOTING_THRESHOLD                      = 90;               // percent
 const size_t   UPGRADE_VOTING_WINDOW                         = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
 const size_t   UPGRADE_WINDOW                                = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
@@ -95,6 +101,7 @@ const uint8_t  BLOCK_MAJOR_VERSION_1                         =  1;
 const uint8_t  BLOCK_MAJOR_VERSION_2                         =  2;
 const uint8_t  BLOCK_MAJOR_VERSION_3                         =  3;
 const uint8_t  BLOCK_MAJOR_VERSION_4                         =  4;
+const uint8_t  BLOCK_MAJOR_VERSION_5                         =  5;
 const uint8_t  BLOCK_MINOR_VERSION_0                         =  0;
 const uint8_t  BLOCK_MINOR_VERSION_1                         =  1;
 
@@ -121,11 +128,10 @@ const size_t   P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT          = 5000;          //
 const char     P2P_STAT_TRUSTED_PUB_KEY[]                    = "85ae8734f90bc1ee295ceb0ec05a49852d4dbbc9d1c27a619b5f4bdf26a0196e";
 
 const std::initializer_list<const char*> SEED_NODES = {
-  "64.34.219.46:42080",
-  "66.172.27.42:42080",
-  "66.172.27.6:42080",
-  "76.74.170.207:42080",
-  "76.74.219.163:42080",
+  "seed1.digitalnote.biz:42080",
+  "seed2.digitalnote.biz:42080",
+  "seed3.digitalnote.biz:42080",
+  "seed4.digitalnote.biz:42080",
 };
 
 struct CheckpointData {
@@ -170,6 +176,12 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
     { 360000, "296cf882a4d14a12de1403ff9326b446ba3694b032fa46e33136a58903897475" },
     { 385000, "79de0d2a49a2ad3407003931c0caa2cd040594519fcaf955ae724909334883ee" },
     { 418020, "23f02d8af6318504659e94c55047ac464ad35d42ca4af5668c279f1e484fad19" },
+    { 555878, "46d7eac1aea2054be6d98189b865f36c71e3444768f10ccf7fb6261e56e792fa" },
+};
+
+const std::map<const uint32_t, const uint8_t> Version = {
+	// {BlockIndex , Version}
+	{ 668682, 1 }
 };
 
 } // CryptoNote

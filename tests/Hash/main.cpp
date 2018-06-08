@@ -29,8 +29,11 @@ extern "C" {
     Crypto::tree_hash((const char (*)[32]) data, length >> 5, hash);
   }
 
-  static void slow_hash(const void *data, size_t length, char *hash) {
-    cn_slow_hash(*context, data, length, *reinterpret_cast<chash *>(hash));
+  static void cn_slow_hash_0(const void *data, size_t length, char *hash) {
+	  return cn_slow_hash(*context, data, length, *reinterpret_cast<chash *>(hash), 0);
+  }
+  static void cn_slow_hash_1(const void *data, size_t length, char *hash) {
+	  return cn_slow_hash(*context, data, length, *reinterpret_cast<chash *>(hash), 1);
   }
 }
 
@@ -38,9 +41,9 @@ extern "C" typedef void hash_f(const void *, size_t, char *);
 struct hash_func {
   const string name;
   hash_f &f;
-} hashes[] = {{"fast", Crypto::cn_fast_hash}, {"slow", slow_hash}, {"tree", hash_tree},
+} hashes[] = {{"fast", Crypto::cn_fast_hash}, {"slow", cn_slow_hash_0}, {"tree", hash_tree},
   {"extra-blake", Crypto::hash_extra_blake}, {"extra-groestl", Crypto::hash_extra_groestl},
-  {"extra-jh", Crypto::hash_extra_jh}, {"extra-skein", Crypto::hash_extra_skein}};
+  {"extra-jh", Crypto::hash_extra_jh}, {"extra-skein", Crypto::hash_extra_skein},{ "slow-1", cn_slow_hash_1 }};
 
 int main(int argc, char *argv[]) {
   hash_f *f;
@@ -64,7 +67,7 @@ int main(int argc, char *argv[]) {
       break;
     }
   }
-  if (f == slow_hash) {
+  if (f == cn_slow_hash_0 || f == cn_slow_hash_1) {
     context = new Crypto::cn_context();
   }
   input.open(argv[2], ios_base::in);
@@ -100,6 +103,9 @@ int main(int argc, char *argv[]) {
       cerr << endl;
       error = true;
     }
+	else
+	cerr << endl << "Hash comparision success.";
+	cerr << endl;
   }
   return error ? 1 : 0;
 }

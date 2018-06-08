@@ -77,6 +77,7 @@ namespace CryptoNote {
     uint32_t getCurrentBlockchainHeight(); //TODO rename to getCurrentBlockchainSize
     Crypto::Hash getTailId();
     Crypto::Hash getTailId(uint32_t& height);
+    uint8_t getForkVersion();
     difficulty_type getDifficultyForNextBlock();
     uint64_t getCoinsInCirculation();
     uint8_t get_block_major_version_for_height(uint64_t height) const;
@@ -97,6 +98,7 @@ namespace CryptoNote {
     bool checkTransactionInputs(const Transaction& tx, uint32_t& pmax_used_block_height, Crypto::Hash& max_used_block_id, BlockInfo* tail = 0);
     uint64_t getCurrentCumulativeBlocksizeLimit();
     uint64_t blockDifficulty(size_t i);
+    uint64_t getBlockTimestamp(uint32_t height);
     bool getBlockContainingTransaction(const Crypto::Hash& txId, Crypto::Hash& blockId, uint32_t& blockHeight);
     bool getAlreadyGeneratedCoins(const Crypto::Hash& hash, uint64_t& generatedCoins);
     bool getBlockSize(const Crypto::Hash& hash, size_t& size);
@@ -259,6 +261,7 @@ namespace CryptoNote {
     UpgradeDetector m_upgradeDetectorV2;
     UpgradeDetector m_upgradeDetectorV3;
     UpgradeDetector m_upgradeDetectorV4;
+    UpgradeDetector m_upgradeDetectorV5;
 
     PaymentIdIndex m_paymentIdIndex;
     TimestampBlocksIndex m_timestampIndex;

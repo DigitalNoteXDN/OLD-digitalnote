@@ -34,14 +34,14 @@ const uint64_t MINIMUM_FEE                                   = UINT64_C(100000);
 const uint64_t DEFAULT_DUST_THRESHOLD                        = UINT64_C(100000);     // pow(10, 5)
 
 //const uint64_t DIFFICULTY_TARGET                           = 240; // pre-LWMA value
-const uint64_t DIFFICULTY_TARGET                             = 120; // LWMA
+const uint64_t DIFFICULTY_TARGET                             = 120; // LWMA-2
 const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT            = 60 * 60 * 2;
-const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V1         = 3 * DIFFICULTY_TARGET;  //LWMA
+const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V1         = 3 * DIFFICULTY_TARGET;  //LWMA-2
 const uint64_t EXPECTED_NUMBER_OF_BLOCKS_PER_DAY             = 24 * 60 * 60 / DIFFICULTY_TARGET;
 const size_t   DIFFICULTY_WINDOW                             = 240; // blocks
-const size_t   DIFFICULTY_WINDOW_V1                          = 60; // LWMA
+const size_t   DIFFICULTY_WINDOW_V1                          = 60; // LWMA-2
 const size_t   DIFFICULTY_CUT                                = 30;  // timestamps to cut after sorting
-const size_t   DIFFICULTY_LAG                                = 15;  // not used in LWMA
+const size_t   DIFFICULTY_LAG                                = 15;  // not used in LWMA-2
 static_assert(2 * DIFFICULTY_CUT <= DIFFICULTY_WINDOW - 2, "Bad DIFFICULTY_WINDOW or DIFFICULTY_CUT");
 
 const uint64_t DEPOSIT_MIN_AMOUNT                            = 150 * COIN;

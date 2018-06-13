@@ -528,17 +528,17 @@ difficulty_type Currency::nextDifficulty(std::vector<uint64_t> timestamps,
 	int64_t L(0), ST, sum_3_ST(0), next_D, prev_D;
 
 	// Hardcode difficulty for 61 blocks after fork height: 
-	if (height >= parameters::UPGRADE_HEIGHT_V5 && height < parameters::UPGRADE_HEIGHT_V5 + 62) {
+	if (height >= parameters::UPGRADE_HEIGHT_V5 && height <= parameters::UPGRADE_HEIGHT_V5 + N) {
 		return 1000000000;
 	}
 
 	// TS and CD vectors must be size N+1 after startup, and element N is most recent block.
 
 	// If coin is starting, this will be activated.
-	uint64_t initial_difficulty_guess = 100; // Dev needs to select this. Guess low.
-	if (timestamps.size() <= static_cast<uint64_t>(N)) {
-		return initial_difficulty_guess;
-	}
+	//int64_t initial_difficulty_guess = 100; // Dev needs to select this. Guess low.
+	//if (timestamps.size() <= static_cast<uint64_t>(N)) {
+	//	return initial_difficulty_guess;
+	//}
 
 	// N is most recently solved block. i must be signed
 	for (int64_t i = 1; i <= N; i++) {

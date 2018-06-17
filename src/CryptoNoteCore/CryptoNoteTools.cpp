@@ -31,6 +31,19 @@ Crypto::Hash getBinaryArrayHash(const BinaryArray& binaryArray) {
   return hash;
 }
 
+uint64_t getInputAmount(const Transaction& transaction) {
+  uint64_t amount = 0;
+  for (auto& input : transaction.inputs) {
+    if (input.type() == typeid(KeyInput)) {
+      amount += boost::get<KeyInput>(input).amount;
+    } else if (input.type() == typeid(MultisignatureInput)) {
+      amount += boost::get<MultisignatureInput>(input).amount;
+    }
+  }
+
+  return amount;
+}
+
 std::vector<uint64_t> getInputsAmounts(const Transaction& transaction) {
   std::vector<uint64_t> inputsAmounts;
   inputsAmounts.reserve(transaction.inputs.size());

@@ -47,7 +47,7 @@ struct COMMAND_RPC_GET_BLOCKS_FAST {
 
   struct request {
     std::vector<Crypto::Hash> block_ids; //*first 10 blocks id goes sequential, next goes in pow(2,n) offset, like 2, 4, 8, 16, 32, 64 and so on, and the last one is always genesis block */
-    
+
     void serialize(ISerializer &s) {
       serializeAsBinary(block_ids, "block_ids", s);
     }
@@ -85,7 +85,7 @@ struct COMMAND_RPC_GET_TRANSACTIONS {
     void serialize(ISerializer &s) {
       KV_MEMBER(txs_as_hex)
       KV_MEMBER(missed_tx)
-      KV_MEMBER(status)    
+      KV_MEMBER(status)
     }
   };
 };
@@ -144,7 +144,7 @@ struct COMMAND_RPC_GET_POOL_CHANGES_LITE {
 
 //-----------------------------------------------
 struct COMMAND_RPC_GET_TX_GLOBAL_OUTPUTS_INDEXES {
-  
+
   struct request {
     Crypto::Hash txid;
 
@@ -402,6 +402,7 @@ struct BLOCK_HEADER_RESPONSE {
   }
 };
 
+
 struct f_transaction_short_response {
   std::string hash;
   uint64_t fee;
@@ -452,15 +453,15 @@ struct f_block_short_response {
 
 struct f_block_details_response {
   uint8_t major_version;
-  uint8_t minor_version;  
+  uint8_t minor_version;
   uint64_t timestamp;
   std::string prev_hash;
   uint32_t nonce;
   bool orphan_status;
-  uint32_t height;
+  uint64_t height;
   uint64_t depth;
   std::string hash;
-  uint64_t difficulty;
+  difficulty_type difficulty;
   uint64_t reward;
   uint64_t blockSize;
   size_t sizeMedian;
@@ -509,47 +510,25 @@ struct currency_base_coin {
 
 struct currency_core {
   std::vector<std::string> SEED_NODES;
-  unsigned EMISSION_SPEED_FACTOR;
+  uint64_t EMISSION_SPEED_FACTOR;
   uint64_t DIFFICULTY_TARGET;
-  size_t CRYPTONOTE_DISPLAY_DECIMAL_POINT;
+  uint64_t CRYPTONOTE_DISPLAY_DECIMAL_POINT;
   std::string MONEY_SUPPLY;
+//uint64_t GENESIS_BLOCK_REWARD;
   uint64_t DEFAULT_DUST_THRESHOLD;
   uint64_t MINIMUM_FEE;
-  uint32_t CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW;
-  size_t CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE;
-  size_t CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1;
-  size_t CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V2;
+  uint64_t CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW;
+  uint64_t CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE;
+//  uint64_t CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1;
   uint64_t CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
-  int P2P_DEFAULT_PORT;
-  int RPC_DEFAULT_PORT;
-  size_t MAX_BLOCK_SIZE_INITIAL;
+  uint64_t P2P_DEFAULT_PORT;
+  uint64_t RPC_DEFAULT_PORT;
+  uint64_t MAX_BLOCK_SIZE_INITIAL;
   uint64_t EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;
-  uint32_t UPGRADE_HEIGHT_V2;
-  uint32_t UPGRADE_HEIGHT_V3;
-  size_t DIFFICULTY_WINDOW;
-  size_t DIFFICULTY_CUT;
-  size_t DIFFICULTY_LAG;
-  uint16_t MIN_MIXIN;
-  uint8_t MANDATORY_MIXIN_BLOCK_VERSION;
-  uint32_t MIXIN_START_HEIGHT;
-  uint32_t MANDATORY_TRANSACTION;
-  uint32_t KILL_HEIGHT;
-  uint64_t TAIL_EMISSION_REWARD;
-  uint8_t CRYPTONOTE_COIN_VERSION;
-  std::string GENESIS_BLOCK_REWARD;
-  size_t DIFFICULTY_WINDOW_V1;
-  size_t DIFFICULTY_WINDOW_V2;
-  size_t DIFFICULTY_CUT_V1;
-  size_t DIFFICULTY_CUT_V2;
-  size_t DIFFICULTY_LAG_V1;
-  size_t DIFFICULTY_LAG_V2;
-  uint32_t ZAWY_DIFFICULTY_BLOCK_INDEX;
-  uint32_t ZAWY_DIFFICULTY_LAST_BLOCK;
-  uint32_t ZAWY_LWMA_DIFFICULTY_BLOCK_INDEX;
-  uint32_t ZAWY_LWMA_DIFFICULTY_LAST_BLOCK;
-  uint32_t ZAWY_LWMA_DIFFICULTY_N;
-  uint32_t BUGGED_ZAWY_DIFFICULTY_BLOCK_INDEX;
-  std::string BYTECOIN_NETWORK;
+  uint64_t UPGRADE_HEIGHT;
+  uint64_t DIFFICULTY_CUT;
+  uint64_t DIFFICULTY_LAG;
+  //std::string BYTECOIN_NETWORK;
   std::string CRYPTONOTE_NAME;
   std::string GENESIS_COINBASE_TX_HEX;
   std::vector<std::string> CHECKPOINTS;
@@ -560,48 +539,30 @@ struct currency_core {
     KV_MEMBER(DIFFICULTY_TARGET)
     KV_MEMBER(CRYPTONOTE_DISPLAY_DECIMAL_POINT)
     KV_MEMBER(MONEY_SUPPLY)
+//    KV_MEMBER(GENESIS_BLOCK_REWARD)
     KV_MEMBER(DEFAULT_DUST_THRESHOLD)
     KV_MEMBER(MINIMUM_FEE)
     KV_MEMBER(CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW)
     KV_MEMBER(CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE)
-    KV_MEMBER(CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1)
-    KV_MEMBER(CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V2)
+//    KV_MEMBER(CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1)
     KV_MEMBER(CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX)
     KV_MEMBER(P2P_DEFAULT_PORT)
     KV_MEMBER(RPC_DEFAULT_PORT)
     KV_MEMBER(MAX_BLOCK_SIZE_INITIAL)
     KV_MEMBER(EXPECTED_NUMBER_OF_BLOCKS_PER_DAY)
-    KV_MEMBER(UPGRADE_HEIGHT_V2)
-    KV_MEMBER(UPGRADE_HEIGHT_V3)
-    KV_MEMBER(DIFFICULTY_WINDOW)
+    KV_MEMBER(UPGRADE_HEIGHT)
     KV_MEMBER(DIFFICULTY_CUT)
     KV_MEMBER(DIFFICULTY_LAG)
-    KV_MEMBER(MIN_MIXIN)
-    KV_MEMBER(MANDATORY_MIXIN_BLOCK_VERSION)
-    KV_MEMBER(MIXIN_START_HEIGHT)
-    KV_MEMBER(MANDATORY_TRANSACTION)
-    KV_MEMBER(KILL_HEIGHT)
-    KV_MEMBER(TAIL_EMISSION_REWARD)
-    KV_MEMBER(CRYPTONOTE_COIN_VERSION)
-    KV_MEMBER(GENESIS_BLOCK_REWARD)
-    KV_MEMBER(DIFFICULTY_WINDOW_V1)
-    KV_MEMBER(DIFFICULTY_WINDOW_V2)
-    KV_MEMBER(DIFFICULTY_CUT_V1)
-    KV_MEMBER(DIFFICULTY_CUT_V2)
-    KV_MEMBER(DIFFICULTY_LAG_V1)
-    KV_MEMBER(DIFFICULTY_LAG_V2)
-    KV_MEMBER(ZAWY_DIFFICULTY_BLOCK_INDEX)
-    KV_MEMBER(ZAWY_DIFFICULTY_LAST_BLOCK)
-    KV_MEMBER(ZAWY_LWMA_DIFFICULTY_BLOCK_INDEX)
-    KV_MEMBER(ZAWY_LWMA_DIFFICULTY_LAST_BLOCK)
-    KV_MEMBER(ZAWY_LWMA_DIFFICULTY_N)
-    KV_MEMBER(BUGGED_ZAWY_DIFFICULTY_BLOCK_INDEX)
-    KV_MEMBER(BYTECOIN_NETWORK)
+//    KV_MEMBER(BYTECOIN_NETWORK)
     KV_MEMBER(CRYPTONOTE_NAME)
     KV_MEMBER(GENESIS_COINBASE_TX_HEX)
     KV_MEMBER(CHECKPOINTS)
   }
 };
+
+
+
+
 
 struct COMMAND_RPC_GET_LAST_BLOCK_HEADER {
   typedef EMPTY_STRUCT request;
@@ -631,6 +592,8 @@ struct COMMAND_RPC_GET_BLOCK_HEADER_BY_HEIGHT {
 
   typedef BLOCK_HEADER_RESPONSE response;
 };
+
+
 
 struct F_COMMAND_RPC_GET_BLOCKS_LIST {
   struct request {
@@ -695,20 +658,6 @@ struct F_COMMAND_RPC_GET_TRANSACTION_DETAILS {
     }
   };
 };
-
-struct F_COMMAND_RPC_GET_POOL {
-  typedef EMPTY_STRUCT request;
-
-  struct response {
-    std::vector<f_transaction_short_response> transactions; //transactions blobs as hex
-    std::string status;
-
-    void serialize(ISerializer &s) {
-      KV_MEMBER(transactions)
-      KV_MEMBER(status)
-    }
-  };
-};
 struct F_COMMAND_RPC_GET_BLOCKCHAIN_SETTINGS {
   typedef EMPTY_STRUCT request;
   struct response {
@@ -725,6 +674,8 @@ struct F_COMMAND_RPC_GET_BLOCKCHAIN_SETTINGS {
     }
   };
 };
+
+
 
 struct COMMAND_RPC_QUERY_BLOCKS {
   struct request {

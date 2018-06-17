@@ -75,6 +75,7 @@ bool get_aux_block_header_hash(const Block& b, Crypto::Hash& res);
 bool get_block_hash(const Block& b, Crypto::Hash& res);
 Crypto::Hash get_block_hash(const Block& b);
 bool get_block_longhash(Crypto::cn_context &context, const Block& b, Crypto::Hash& res);
+bool get_inputs_money_amount(const Transaction& tx, uint64_t& money);
 uint64_t get_outs_money_amount(const Transaction& tx);
 bool check_inputs_types_supported(const TransactionPrefix& tx);
 bool check_outs_valid(const TransactionPrefix& tx, std::string* error = 0);

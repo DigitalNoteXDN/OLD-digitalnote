@@ -522,7 +522,7 @@ difficulty_type Currency::nextDifficulty1(std::vector<uint64_t> timestamps,
 difficulty_type Currency::nextDifficulty(std::vector<uint64_t> timestamps,
 	std::vector<difficulty_type> cumulativeDifficulties, uint64_t height) const {
 
-	int64_t T = parameters::DIFFICULTY_TARGET; // set to 20 temporarily
+	int64_t T = parameters::DIFFICULTY_TARGET_V1; // set to 20 temporarily
 	int64_t N = parameters::DIFFICULTY_WINDOW_V1 - 1; //  N=45, 60, and 90 for T=600, 120, 60.
 	int64_t FTL = parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V1; // < 3xT
 	int64_t L(0), ST, sum_3_ST(0), next_D, prev_D;

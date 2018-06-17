@@ -133,6 +133,7 @@ bool RpcServer::processJsonRpcRequest(const HttpRequest& request, HttpResponse& 
       { "f_blocks_list_json", { makeMemberMethod(&RpcServer::f_on_blocks_list_json), false } },
       { "f_block_json", { makeMemberMethod(&RpcServer::f_on_block_json), false } },
       { "f_transaction_json", { makeMemberMethod(&RpcServer::f_on_transaction_json), false } },
+      { "f_on_transactions_pool_json", { makeMemberMethod(&RpcServer::f_on_transactions_pool_json), false } },
      // { "f_get_blockchain_settings", { makeMemberMethod(&RpcServer::f_on_get_blockchain_settings), true } },
       { "getblockcount", { makeMemberMethod(&RpcServer::on_getblockcount), true } },
       { "on_getblockhash", { makeMemberMethod(&RpcServer::on_getblockhash), false } },
@@ -326,7 +327,15 @@ bool RpcServer::on_get_info(const COMMAND_RPC_GET_INFO::request& req, COMMAND_RP
   res.white_peerlist_size = m_p2p.getPeerlistManager().get_white_peers_count();
   res.grey_peerlist_size = m_p2p.getPeerlistManager().get_gray_peers_count();
   res.last_known_block_index = std::max(static_cast<uint32_t>(1), m_protocolQuery.getObservedHeight()) - 1;
-  res.full_deposit_amount = m_core.fullDepositAmount();
+
+
+  uint64_t height = m_core.get_current_blockchain_height() - 1;
+  uint64_t totalCoinsInNetwork = m_core.coinsEmittedAtHeight(height);
+  uint64_t totalCoinsOnDeposits = m_core.depositAmountAtHeight(height);
+  if(totalCoinsOnDeposits > totalCoinsInNetwork){
+	totalCoinsOnDeposits = totalCoinsInNetwork - (totalCoinsOnDeposits - totalCoinsInNetwork ) - (totalCoinsInNetwork * 0.0375 );
+  }
+  res.full_deposit_amount = totalCoinsOnDeposits;
   res.full_deposit_interest = m_core.fullDepositInterest();
   res.status = CORE_RPC_STATUS_OK;
   return true;
@@ -477,6 +486,7 @@ bool RpcServer::f_on_blocks_list_json(const F_COMMAND_RPC_GET_BLOCKS_LIST::reque
     block_short.cumul_size = blokBlobSize + tx_cumulative_block_size - minerTxBlobSize;
     block_short.timestamp = blk.timestamp;
     block_short.height = i;
+    m_core.getBlockDifficulty(static_cast<uint32_t>(block_short.height), block_short.difficulty);
     block_short.hash = Common::podToHex(block_hash);
     block_short.cumul_size = blokBlobSize + tx_cumulative_block_size - minerTxBlobSize;
     block_short.tx_count = blk.transactionHashes.size() + 1;
@@ -717,6 +727,26 @@ bool RpcServer::f_getMixin(const Transaction& transaction, uint64_t& mixin) {
   return true;
 }
 
+bool RpcServer::f_on_transactions_pool_json(const F_COMMAND_RPC_GET_POOL::request& req, F_COMMAND_RPC_GET_POOL::response& res) {
+    auto pool = m_core.getPoolTransactions();
+    for (const Transaction tx : pool) {
+        f_transaction_short_response transaction_short;
+        uint64_t amount_in = getInputAmount(tx);
+        uint64_t amount_out = getOutputAmount(tx);
+
+        transaction_short.hash = Common::podToHex(getObjectHash(tx));
+        transaction_short.fee =
+			amount_in < amount_out + parameters::MINIMUM_FEE //account for interest in output, it always has minimum fee
+			? parameters::MINIMUM_FEE
+			: amount_in - amount_out;
+        transaction_short.amount_out = amount_out;
+        transaction_short.size = getObjectBinarySize(tx);
+        res.transactions.push_back(transaction_short);
+    }
+
+    res.status = CORE_RPC_STATUS_OK;
+    return true;
+}
 
 bool RpcServer::on_getblockcount(const COMMAND_RPC_GETBLOCKCOUNT::request& req, COMMAND_RPC_GETBLOCKCOUNT::response& res) {
   res.count = m_core.get_current_blockchain_height();

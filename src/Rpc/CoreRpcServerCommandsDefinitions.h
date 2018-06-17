@@ -438,6 +438,7 @@ struct f_transaction_details_response {
 struct f_block_short_response {
   uint64_t timestamp;
   uint32_t height;
+  difficulty_type difficulty;
   std::string hash;
   uint64_t tx_count;
   uint64_t cumul_size;
@@ -445,6 +446,7 @@ struct f_block_short_response {
   void serialize(ISerializer &s) {
     KV_MEMBER(timestamp)
     KV_MEMBER(height)
+    KV_MEMBER(difficulty)
     KV_MEMBER(hash)
     KV_MEMBER(cumul_size)
     KV_MEMBER(tx_count)
@@ -658,6 +660,21 @@ struct F_COMMAND_RPC_GET_TRANSACTION_DETAILS {
     }
   };
 };
+
+struct F_COMMAND_RPC_GET_POOL {
+    typedef EMPTY_STRUCT request;
+
+    struct response {
+        std::vector<f_transaction_short_response> transactions; //transactions blobs as hex
+        std::string status;
+
+        void serialize(ISerializer &s) {
+            KV_MEMBER(transactions)
+            KV_MEMBER(status)
+        }
+    };
+};
+
 struct F_COMMAND_RPC_GET_BLOCKCHAIN_SETTINGS {
   typedef EMPTY_STRUCT request;
   struct response {

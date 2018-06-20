@@ -224,6 +224,23 @@ bool constructTransaction(
   return true;
 }
 
+bool get_inputs_money_amount(const Transaction& tx, uint64_t& money) {
+  money = 0;
+
+  for (const auto& in : tx.inputs) {
+    uint64_t amount = 0;
+
+    if (in.type() == typeid(KeyInput)) {
+      amount = boost::get<KeyInput>(in).amount;
+    } else if (in.type() == typeid(MultisignatureInput)) {
+      amount = boost::get<MultisignatureInput>(in).amount;
+    }
+
+    money += amount;
+  }
+  return true;
+}
+
 uint32_t get_block_height(const Block& b) {
   if (b.baseTransaction.inputs.size() != 1) {
     return 0;

@@ -1,11 +1,19 @@
+Release notes 5.0.2-beta
+- Adjustment of hardcoded initial post-fork difficulty to keep the chain moving
+
+Release notes 5.0.1-beta
+- Small (but important) hard fork tweak to ensure smooth fork
+
 Release notes 5.0.0-beta
 
 - Proof-of-work change to CryptoNightV1 (variant 1 also known as "monero7") to remain ASIC resistant
-- Difficulty adjustment algorithm has been updated to Zawy's LWMA to resist hash and timestamp attacks
+- Difficulty adjustment algorithm has been updated to Zawy's LWMA-2 to resist hash and timestamp attacks
 - Seed nodes updated to be operational (no more unresponsive seeds from old dev)
 - Block target reduced to 2 minutes
 - Difficulty is hardcoded to "reset" back to GPU levels for blocks immediately following the fork so that the network continues to work as intended and does not stall
+- GUI embedded pool miner now works
 - Latest checkpoints and small Payment Gate bug fix
+- Arch Linux compile fixes
 
 Release notes 4.0.3-beta
 

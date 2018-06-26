@@ -71,7 +71,7 @@ const size_t   FUSION_TX_MIN_IN_OUT_COUNT_RATIO              = 4;
 const uint32_t UPGRADE_HEIGHT_V2                             = 136212;
 const uint32_t UPGRADE_HEIGHT_V3                             = 317950;
 const uint32_t UPGRADE_HEIGHT_V4                             = 338000;
-const uint32_t UPGRADE_HEIGHT_V5                             = 668946;  //June 25 12AM UTC
+const uint32_t UPGRADE_HEIGHT_V5                             = 669369;  //June 27 refork
 const unsigned UPGRADE_VOTING_THRESHOLD                      = 90;               // percent
 const size_t   UPGRADE_VOTING_WINDOW                         = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
 const size_t   UPGRADE_WINDOW                                = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
@@ -183,7 +183,7 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
 
 const std::map<const uint32_t, const uint8_t> Version = {
 	// {BlockIndex , Version}
-	{ 668946, 1 }
+	{ 669369, 1 }
 };
 
 } // CryptoNote

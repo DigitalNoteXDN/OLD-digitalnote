@@ -1,5 +1,6 @@
 // Copyright (c) 2011-2016 The Cryptonote developers
 // Copyright (c) 2014-2017 XDN-project developers
+// Copyright (c) 2018 DigitalNote XDN developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -179,6 +180,8 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
     { 555878, "46d7eac1aea2054be6d98189b865f36c71e3444768f10ccf7fb6261e56e792fa" },
     { 663752, "fa757b3f2afe9381c59e96584ad030638e992f5fe49ac2508e8732d53ff5cf25" },
     { 666192, "204cfa408cf13a87305381ffbceea25d99a327256c5077ac42b7d6310029d9c2" },
+    { 669370, "06ef3179b8ea8a6b4b1945424384a73900a6c1a3a30bede9179dea7c6ca98a62" },
+    { 676362, "0dd6e5c5371fadc30a995b5819698ecdbf438a96e3920df74f18164426ef620a" },
 };
 
 const std::map<const uint32_t, const uint8_t> Version = {

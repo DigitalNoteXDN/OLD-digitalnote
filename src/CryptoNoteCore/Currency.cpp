@@ -105,13 +105,17 @@ bool Currency::generateGenesisBlock() {
 }
 
 uint64_t Currency::baseRewardFunction(uint64_t alreadyGeneratedCoins, uint32_t height) const {
-  uint64_t base_reward = START_BLOCK_REWARD >> (static_cast<uint64_t>(height) / REWARD_HALVING_INTERVAL);
-  base_reward = (std::max)(base_reward, MIN_BLOCK_REWARD);
-  //block 704000 reward fix at 12AM CST 8/20/18
-  if (height >= parameters::UPGRADE_HEIGHT_V6)
-	  base_reward = MIN_BLOCK_REWARD;
-  base_reward = (std::min)(base_reward, m_moneySupply - alreadyGeneratedCoins);
-  return base_reward;
+	uint64_t base_reward;
+	if (height < parameters::UPGRADE_HEIGHT_V6)
+		base_reward = START_BLOCK_REWARD >> (static_cast<uint64_t>(height) / REWARD_HALVING_INTERVAL);
+	else
+	{
+		uint64_t shift = static_cast<uint64_t>(height) / REWARD_HALVING_INTERVAL;
+		base_reward = shift >= 64 ? 0 : START_BLOCK_REWARD >> shift;
+	}
+	base_reward = (std::max)(base_reward, MIN_BLOCK_REWARD);
+	base_reward = (std::min)(base_reward, m_moneySupply - alreadyGeneratedCoins);
+	return base_reward;
 }
 
 size_t Currency::blockGrantedFullRewardZoneByBlockVersion(uint8_t blockMajorVersion) const {

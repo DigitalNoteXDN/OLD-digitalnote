@@ -1,5 +1,6 @@
 // Copyright (c) 2011-2016 The Cryptonote developers
 // Copyright (c) 2014-2017 XDN-project developers
+// Copyright (c) 2018 DigitalNote XDN developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -72,6 +73,7 @@ const uint32_t UPGRADE_HEIGHT_V2                             = 136212;
 const uint32_t UPGRADE_HEIGHT_V3                             = 317950;
 const uint32_t UPGRADE_HEIGHT_V4                             = 338000;
 const uint32_t UPGRADE_HEIGHT_V5                             = 669369;  //June 27 refork
+const uint32_t UPGRADE_HEIGHT_V6                             = 704614;  //Aug 20 base reward fork fix
 const unsigned UPGRADE_VOTING_THRESHOLD                      = 90;               // percent
 const size_t   UPGRADE_VOTING_WINDOW                         = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
 const size_t   UPGRADE_WINDOW                                = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
@@ -102,6 +104,7 @@ const uint8_t  BLOCK_MAJOR_VERSION_2                         =  2;
 const uint8_t  BLOCK_MAJOR_VERSION_3                         =  3;
 const uint8_t  BLOCK_MAJOR_VERSION_4                         =  4;
 const uint8_t  BLOCK_MAJOR_VERSION_5                         =  5;
+const uint8_t  BLOCK_MAJOR_VERSION_6                         =  6;
 const uint8_t  BLOCK_MINOR_VERSION_0                         =  0;
 const uint8_t  BLOCK_MINOR_VERSION_1                         =  1;
 
@@ -179,11 +182,15 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
     { 555878, "46d7eac1aea2054be6d98189b865f36c71e3444768f10ccf7fb6261e56e792fa" },
     { 663752, "fa757b3f2afe9381c59e96584ad030638e992f5fe49ac2508e8732d53ff5cf25" },
     { 666192, "204cfa408cf13a87305381ffbceea25d99a327256c5077ac42b7d6310029d9c2" },
+    { 669370, "06ef3179b8ea8a6b4b1945424384a73900a6c1a3a30bede9179dea7c6ca98a62" },
+    { 676362, "0dd6e5c5371fadc30a995b5819698ecdbf438a96e3920df74f18164426ef620a" },
+	{ 704170, "a609c3fbbf72489a48c27262799557b999b6aed89cafd0ec4108a086bdb64986" },
 };
 
 const std::map<const uint32_t, const uint8_t> Version = {
 	// {BlockIndex , Version}
-	{ 669369, 1 }
+	{ 669369, 1 },
+    { 704614, 2 },
 };
 
 } // CryptoNote

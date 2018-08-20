@@ -120,6 +120,7 @@ public:
   bool parseAmount(const std::string& str, uint64_t& amount) const;
 
   difficulty_type nextDifficulty(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties, uint64_t height) const;
+  difficulty_type nextDifficulty2(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties, uint64_t height) const;
   difficulty_type nextDifficulty1(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const;
 
   bool checkProofOfWorkV1(Crypto::cn_context& context, const Block& block, difficulty_type currentDiffic, Crypto::Hash& proofOfWork) const;
@@ -186,6 +187,7 @@ private:
   uint32_t m_upgradeHeightV3;
   uint32_t m_upgradeHeightV4;
   uint32_t m_upgradeHeightV5;
+  uint32_t m_upgradeHeightV6;
   unsigned int m_upgradeVotingThreshold;
   uint32_t m_upgradeVotingWindow;
   uint32_t m_upgradeWindow;
@@ -272,6 +274,7 @@ public:
   CurrencyBuilder& upgradeHeightV3(uint32_t val) { m_currency.m_upgradeHeightV3 = val; return *this; }
   CurrencyBuilder& upgradeHeightV4(uint32_t val) { m_currency.m_upgradeHeightV4 = val; return *this; }
   CurrencyBuilder& upgradeHeightV5(uint32_t val) { m_currency.m_upgradeHeightV5 = val; return *this; }
+  CurrencyBuilder& upgradeHeightV6(uint32_t val) { m_currency.m_upgradeHeightV6 = val; return *this; }
   CurrencyBuilder& upgradeVotingThreshold(unsigned int val);
   CurrencyBuilder& upgradeVotingWindow(uint32_t val) { m_currency.m_upgradeVotingWindow = val; return *this; }
   CurrencyBuilder& upgradeWindow(size_t val);

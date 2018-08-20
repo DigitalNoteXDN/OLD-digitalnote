@@ -65,6 +65,7 @@ bool Currency::init() {
     m_upgradeHeightV3 = static_cast<uint32_t>(-1);
     m_upgradeHeightV4 = static_cast<uint32_t>(-1);
     m_upgradeHeightV5 = static_cast<uint32_t>(-1);
+	m_upgradeHeightV6 = static_cast<uint32_t>(-1);
     m_blocksFileName = "testnet_" + m_blocksFileName;
     m_blocksCacheFileName = "testnet_" + m_blocksCacheFileName;
     m_blockIndexesFileName = "testnet_" + m_blockIndexesFileName;
@@ -104,10 +105,17 @@ bool Currency::generateGenesisBlock() {
 }
 
 uint64_t Currency::baseRewardFunction(uint64_t alreadyGeneratedCoins, uint32_t height) const {
-  uint64_t base_reward = START_BLOCK_REWARD >> (static_cast<uint64_t>(height) / REWARD_HALVING_INTERVAL);
-  base_reward = (std::max)(base_reward, MIN_BLOCK_REWARD);
-  base_reward = (std::min)(base_reward, m_moneySupply - alreadyGeneratedCoins);
-  return base_reward;
+	uint64_t base_reward;
+	if (height < parameters::UPGRADE_HEIGHT_V6)
+		base_reward = START_BLOCK_REWARD >> (static_cast<uint64_t>(height) / REWARD_HALVING_INTERVAL);
+	else
+	{
+		uint64_t shift = static_cast<uint64_t>(height) / REWARD_HALVING_INTERVAL;
+		base_reward = shift >= 64 ? 0 : START_BLOCK_REWARD >> shift;
+	}
+	base_reward = (std::max)(base_reward, MIN_BLOCK_REWARD);
+	base_reward = (std::min)(base_reward, m_moneySupply - alreadyGeneratedCoins);
+	return base_reward;
 }
 
 size_t Currency::blockGrantedFullRewardZoneByBlockVersion(uint8_t blockMajorVersion) const {
@@ -127,6 +135,8 @@ uint32_t Currency::upgradeHeight(uint8_t majorVersion) const {
     return m_upgradeHeightV4;
   } else if (majorVersion == BLOCK_MAJOR_VERSION_5) {
     return m_upgradeHeightV5;
+  } else if (majorVersion == BLOCK_MAJOR_VERSION_6) {
+    return m_upgradeHeightV6;
   } else {
     return static_cast<uint32_t>(-1);
   }
@@ -162,7 +172,7 @@ uint64_t Currency::calculateInterest(uint64_t amount, uint32_t term) const {
   uint64_t bLo = mul128(amount, a, &bHi);
 
   uint64_t interestHi;
-  uint64_t interestLo;
+  uint64_t interestLo;  
   assert(std::numeric_limits<uint32_t>::max() / 100 > m_depositMaxTerm);
   div128_32(bHi, bLo, static_cast<uint32_t>(100 * m_depositMaxTerm), &interestHi, &interestLo);
   assert(interestHi == 0);
@@ -519,7 +529,7 @@ difficulty_type Currency::nextDifficulty1(std::vector<uint64_t> timestamps,
 }
 
 // Zawy's LMWA difficulty algo
-difficulty_type Currency::nextDifficulty(std::vector<uint64_t> timestamps,
+difficulty_type Currency::nextDifficulty2(std::vector<uint64_t> timestamps,
 	std::vector<difficulty_type> cumulativeDifficulties, uint64_t height) const {
 
 	int64_t T = parameters::DIFFICULTY_TARGET_V1; // set to 20 temporarily
@@ -530,6 +540,50 @@ difficulty_type Currency::nextDifficulty(std::vector<uint64_t> timestamps,
 	// Hardcode difficulty for 61 blocks after fork height: 
 	if (height >= parameters::UPGRADE_HEIGHT_V5 && height <= parameters::UPGRADE_HEIGHT_V5 + N) {
 		return 1000000;
+	}
+
+	// TS and CD vectors must be size N+1 after startup, and element N is most recent block.
+
+	// If coin is starting, this will be activated.
+	//int64_t initial_difficulty_guess = 100; // Dev needs to select this. Guess low.
+	//if (timestamps.size() <= static_cast<uint64_t>(N)) {
+	//	return initial_difficulty_guess;
+	//}
+
+	// N is most recently solved block. i must be signed
+	for (int64_t i = 1; i <= N; i++) {
+		// +/- FTL limits are bad timestamp protection.  6xT limits drop in D to reduce oscillations.
+		ST = std::max(-FTL, std::min((int64_t)(timestamps[i]) - (int64_t)(timestamps[i - 1]), 6 * T));
+		L += ST * i; // Give more weight to most recent blocks.
+					 // Do these inside loop to capture -FTL and +6*T limitations.
+		if (i > N - 3) { sum_3_ST += ST; }
+	}
+
+	// Calculate next_D = avgD * T / LWMA(STs) using integer math
+	next_D = ((cumulativeDifficulties[N] - cumulativeDifficulties[0])*T*(N + 1) * 99) / (100 * 2 * L);
+
+	// Implement LWMA-2 changes from LWMA
+	prev_D = cumulativeDifficulties[N] - cumulativeDifficulties[N - 1];
+	if (sum_3_ST < (8 * T) / 10) { next_D = (prev_D * 110) / 100; }
+
+	return static_cast<uint64_t>(next_D);
+
+	// next_Target = sumTargets*L*2/0.998/T/(N+1)/N/N; // To show the difference.
+}
+
+// Zawy's LMWA difficulty algo
+difficulty_type Currency::nextDifficulty(std::vector<uint64_t> timestamps,
+	std::vector<difficulty_type> cumulativeDifficulties, uint64_t height) const {
+
+	int64_t T = parameters::DIFFICULTY_TARGET_V1; // set to 20 temporarily
+	//N adjusted for LWMA2 fix as per Zawy recommendation
+	int64_t N = parameters::DIFFICULTY_WINDOW_V1; //  N=45, 60, and 90 for T=600, 120, 60.
+	int64_t FTL = parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V1; // < 3xT
+	int64_t L(0), ST, sum_3_ST(0), next_D, prev_D;
+
+	// Hardcode difficulty back to what it was at block 703999 for 61 blocks after fork height: 
+	if (height >= parameters::UPGRADE_HEIGHT_V6 && height <= parameters::UPGRADE_HEIGHT_V6 + N) {
+		return 114291115;
 	}
 
 	// TS and CD vectors must be size N+1 after startup, and element N is most recent block.
@@ -623,6 +677,7 @@ bool Currency::checkProofOfWork(Crypto::cn_context& context, const Block& block,
   case BLOCK_MAJOR_VERSION_3:
   case BLOCK_MAJOR_VERSION_4:
   case BLOCK_MAJOR_VERSION_5:
+  case BLOCK_MAJOR_VERSION_6:
     return checkProofOfWorkV2(context, block, currentDiffic, proofOfWork);
   }
 
@@ -701,6 +756,7 @@ CurrencyBuilder::CurrencyBuilder(Logging::ILogger& log) : m_currency(log) {
   upgradeHeightV3(parameters::UPGRADE_HEIGHT_V3);
   upgradeHeightV4(parameters::UPGRADE_HEIGHT_V4);
   upgradeHeightV5(parameters::UPGRADE_HEIGHT_V5);
+  upgradeHeightV6(parameters::UPGRADE_HEIGHT_V6);
   upgradeVotingThreshold(parameters::UPGRADE_VOTING_THRESHOLD);
   upgradeVotingWindow(parameters::UPGRADE_VOTING_WINDOW);
   upgradeWindow(parameters::UPGRADE_WINDOW);

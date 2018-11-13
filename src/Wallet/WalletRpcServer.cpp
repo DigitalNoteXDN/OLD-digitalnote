@@ -262,11 +262,21 @@ bool wallet_rpc_server::on_get_payments(const wallet_rpc::COMMAND_RPC_GET_PAYMEN
 }
 
 bool wallet_rpc_server::on_get_transfers(const wallet_rpc::COMMAND_RPC_GET_TRANSFERS::request& req, wallet_rpc::COMMAND_RPC_GET_TRANSFERS::response& res) {
+
+  uint64_t min_height = 0, max_height = CryptoNote::parameters::CRYPTONOTE_MAX_BLOCK_NUMBER;
+  if (req.filter_by_height) {
+    min_height = req.min_height;
+    max_height = req.max_height <= max_height ? req.max_height : max_height;
+  }
+
   res.transfers.clear();
   size_t transactionsCount = m_wallet.getTransactionCount();
   for (size_t trantransactionNumber = 0; trantransactionNumber < transactionsCount; ++trantransactionNumber) {
     WalletLegacyTransaction txInfo;
     m_wallet.getTransaction(trantransactionNumber, txInfo);
+    if (txInfo.blockHeight < min_height || txInfo.blockHeight > max_height) { // filter by block height
+      continue;
+    }
     if (txInfo.state != WalletLegacyTransactionState::Active || txInfo.blockHeight == WALLET_LEGACY_UNCONFIRMED_TRANSACTION_HEIGHT) {
       continue;
     }

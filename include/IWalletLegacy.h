@@ -129,6 +129,7 @@ public:
   virtual TransactionId findTransactionByTransferId(TransferId transferId) = 0;
   
   virtual bool getTransaction(TransactionId transactionId, WalletLegacyTransaction& transaction) = 0;
+  virtual bool getTransactionByHash(const Crypto::Hash& hash, WalletLegacyTransaction& transaction) = 0;
   virtual bool getTransfer(TransferId transferId, WalletLegacyTransfer& transfer) = 0;
   virtual bool getDeposit(DepositId depositId, Deposit& deposit) = 0;
   virtual std::vector<Payments> getTransactionsByPaymentIds(const std::vector<PaymentId>& paymentIds) const = 0;

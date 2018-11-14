@@ -223,6 +223,25 @@ using CryptoNote::ISerializer;
     };
   };
 
+  struct COMMAND_RPC_GET_TRANSFER_BY_TXID {
+    struct request
+    {
+      std::string txid;
+
+      void serialize(ISerializer& s) {
+        KV_MEMBER(txid);
+      }
+    };
+
+    struct response {
+      Transfer transfer;
+
+      void serialize(ISerializer& s) {
+        KV_MEMBER(transfer)
+      }
+    };
+  };
+
   struct COMMAND_RPC_GET_HEIGHT {
     typedef CryptoNote::EMPTY_STRUCT request;
 

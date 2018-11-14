@@ -102,6 +102,7 @@ void wallet_rpc_server::processRequest(const CryptoNote::HttpRequest& request, C
       { "get_messages", makeMemberMethod(&wallet_rpc_server::on_get_messages) },
       { "get_payments", makeMemberMethod(&wallet_rpc_server::on_get_payments) },
       { "get_transfers", makeMemberMethod(&wallet_rpc_server::on_get_transfers) },
+      { "get_transfer_by_txid", makeMemberMethod(&wallet_rpc_server::on_get_transfer_by_txid) },
       { "get_height", makeMemberMethod(&wallet_rpc_server::on_get_height) },
       { "reset", makeMemberMethod(&wallet_rpc_server::on_reset) }
     };
@@ -313,6 +314,49 @@ bool wallet_rpc_server::on_get_transfers(const wallet_rpc::COMMAND_RPC_GET_TRANS
 
   return true;
 }
+
+
+bool wallet_rpc_server::on_get_transfer_by_txid(const wallet_rpc::COMMAND_RPC_GET_TRANSFER_BY_TXID::request& req, wallet_rpc::COMMAND_RPC_GET_TRANSFER_BY_TXID::response& res) {
+
+  Hash txid;  
+
+  if (!Common::podFromHex(req.txid, txid)) {
+    throw JsonRpc::JsonRpcError(WALLET_RPC_ERROR_CODE_WRONG_TXID, "txid has an invalid format");
+  }
+
+  WalletLegacyTransaction txInfo;
+  m_wallet.getTransactionByHash(txid, txInfo);
+
+  std::string address = "";
+  if (txInfo.totalAmount < 0) {
+    if (txInfo.transferCount > 0) {
+      WalletLegacyTransfer tr;
+      m_wallet.getTransfer(txInfo.firstTransferId, tr);
+      address = tr.address;
+    }
+  }
+
+  res.transfer.time = txInfo.timestamp;
+  res.transfer.output = txInfo.totalAmount < 0;
+  res.transfer.transactionHash = Common::podToHex(txInfo.hash);
+  res.transfer.amount = std::abs(txInfo.totalAmount);
+  res.transfer.fee = txInfo.fee;
+  res.transfer.address = address;
+  res.transfer.blockIndex = txInfo.blockHeight;
+  res.transfer.unlockTime = txInfo.unlockTime;
+  res.transfer.paymentId = "";
+
+  std::vector<uint8_t> extraVec;
+  extraVec.reserve(txInfo.extra.size());
+  std::for_each(txInfo.extra.begin(), txInfo.extra.end(), [&extraVec](const char el) { extraVec.push_back(el); });
+
+  Crypto::Hash paymentId;
+  res.transfer.paymentId = (getPaymentIdFromTxExtra(extraVec, paymentId) && paymentId != NULL_HASH ? Common::podToHex(paymentId) : "");
+
+
+  return true;
+}
+
 
 bool wallet_rpc_server::on_get_height(const wallet_rpc::COMMAND_RPC_GET_HEIGHT::request& req, wallet_rpc::COMMAND_RPC_GET_HEIGHT::response& res) {
   res.height = m_node.getLastLocalBlockHeight();

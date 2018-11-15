@@ -84,6 +84,7 @@ public:
   TransactionId findTransactionByTransferId(TransferId transferId) const;
 
   bool getTransaction(TransactionId transactionId, WalletLegacyTransaction& transaction) const;
+  bool getTransactionByHash(const Crypto::Hash& hash, WalletLegacyTransaction& transaction) const;
   WalletLegacyTransaction& getTransaction(TransactionId transactionId);
   bool getTransfer(TransferId transferId, WalletLegacyTransfer& transfer) const;
   WalletLegacyTransfer& getTransfer(TransferId transferId);

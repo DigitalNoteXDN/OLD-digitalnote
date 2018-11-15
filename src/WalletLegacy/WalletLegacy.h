@@ -68,6 +68,7 @@ public:
   virtual TransactionId findTransactionByTransferId(TransferId transferId) override;
 
   virtual bool getTransaction(TransactionId transactionId, WalletLegacyTransaction& transaction) override;
+  virtual bool getTransactionByHash(const Crypto::Hash& hash, WalletLegacyTransaction& transaction) override;
   virtual bool getTransfer(TransferId transferId, WalletLegacyTransfer& transfer) override;
   virtual bool getDeposit(DepositId depositId, Deposit& deposit) override;
   virtual std::vector<Payments> getTransactionsByPaymentIds(const std::vector<PaymentId>& paymentIds) const override;

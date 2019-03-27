@@ -74,6 +74,7 @@ const uint32_t UPGRADE_HEIGHT_V3                             = 317950;
 const uint32_t UPGRADE_HEIGHT_V4                             = 338000;
 const uint32_t UPGRADE_HEIGHT_V5                             = 669369;  //June 27 refork
 const uint32_t UPGRADE_HEIGHT_V6                             = 704614;  //Aug 20 base reward fork fix
+const uint32_t UPGRADE_HEIGHT_V7                             = 984206;  //March 29th swap fork
 const unsigned UPGRADE_VOTING_THRESHOLD                      = 90;               // percent
 const size_t   UPGRADE_VOTING_WINDOW                         = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
 const size_t   UPGRADE_WINDOW                                = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
@@ -91,6 +92,7 @@ const char     MINER_CONFIG_FILE_NAME[]                      = "miner_conf.json"
 
 const uint64_t START_BLOCK_REWARD                            = (UINT64_C(320000) * parameters::COIN);
 const uint64_t MIN_BLOCK_REWARD                              = (UINT64_C(150) * parameters::COIN);
+const uint64_t SWAP_BLOCK_REWARD                             = (UINT64_C(0) * parameters::COIN); //March 29th swap fork
 const uint64_t REWARD_HALVING_INTERVAL                       = (UINT64_C(11000));
 
 const char     CRYPTONOTE_NAME[]                             = "digitalnote";
@@ -105,6 +107,7 @@ const uint8_t  BLOCK_MAJOR_VERSION_3                         =  3;
 const uint8_t  BLOCK_MAJOR_VERSION_4                         =  4;
 const uint8_t  BLOCK_MAJOR_VERSION_5                         =  5;
 const uint8_t  BLOCK_MAJOR_VERSION_6                         =  6;
+const uint8_t  BLOCK_MAJOR_VERSION_7                         =  7;
 const uint8_t  BLOCK_MINOR_VERSION_0                         =  0;
 const uint8_t  BLOCK_MINOR_VERSION_1                         =  1;
 
@@ -185,12 +188,14 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
     { 669370, "06ef3179b8ea8a6b4b1945424384a73900a6c1a3a30bede9179dea7c6ca98a62" },
     { 676362, "0dd6e5c5371fadc30a995b5819698ecdbf438a96e3920df74f18164426ef620a" },
 	{ 704170, "a609c3fbbf72489a48c27262799557b999b6aed89cafd0ec4108a086bdb64986" },
+    { 984206, "e8ac95478c238429dda8d4dfd4ea8a30db3d3ed3b06c05eaaf4047f3ca79446c" },
 };
 
 const std::map<const uint32_t, const uint8_t> Version = {
 	// {BlockIndex , Version}
 	{ 669369, 1 },
     { 704614, 2 },
+    { 984206, 3 },
 };
 
 } // CryptoNote

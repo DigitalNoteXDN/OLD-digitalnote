@@ -315,7 +315,8 @@ m_upgradeDetectorV2(currency, m_blocks, BLOCK_MAJOR_VERSION_2, logger),
 m_upgradeDetectorV3(currency, m_blocks, BLOCK_MAJOR_VERSION_3, logger),
 m_upgradeDetectorV4(currency, m_blocks, BLOCK_MAJOR_VERSION_4, logger),
 m_upgradeDetectorV5(currency, m_blocks, BLOCK_MAJOR_VERSION_5, logger),
-m_upgradeDetectorV6(currency, m_blocks, BLOCK_MAJOR_VERSION_6, logger) {
+m_upgradeDetectorV6(currency, m_blocks, BLOCK_MAJOR_VERSION_6, logger),
+m_upgradeDetectorV7(currency, m_blocks, BLOCK_MAJOR_VERSION_7, logger) {
 
   m_outputs.set_deleted_key(0);
   m_multisignatureOutputs.set_deleted_key(0);
@@ -476,6 +477,11 @@ bool Blockchain::init(const std::string& config_folder, bool load_existing) {
   if (!m_upgradeDetectorV6.init()) {
 	  logger(ERROR, BRIGHT_RED) << "Failed to initialize upgrade detector";
 	  return false;
+  }
+
+  if (!m_upgradeDetectorV7.init()) {
+    logger(ERROR, BRIGHT_RED) << "Failed to initialize upgrade detector";
+    return false;
   }
 
   update_next_comulative_size_limit();
@@ -751,8 +757,10 @@ difficulty_type Blockchain::difficultyAtHeight(uint64_t height) {
 }
 
 uint8_t Blockchain::get_block_major_version_for_height(uint64_t height) const {
-  if (height > m_upgradeDetectorV6.upgradeHeight()) {
-	return m_upgradeDetectorV6.targetVersion();
+    if (height > m_upgradeDetectorV7.upgradeHeight()) {
+    return m_upgradeDetectorV7.targetVersion();
+  } else if (height > m_upgradeDetectorV6.upgradeHeight()) {
+	  return m_upgradeDetectorV6.targetVersion();
   }	else if (height > m_upgradeDetectorV5.upgradeHeight()) {
     return m_upgradeDetectorV5.targetVersion();
   }	else if (height > m_upgradeDetectorV4.upgradeHeight()) {
@@ -1683,7 +1691,7 @@ bool Blockchain::check_tx_outputs(const Transaction& tx) const {
 
 bool Blockchain::check_block_timestamp_main(const Block& b) {
   uint64_t ftl = m_currency.blockFutureTimeLimit();
-  if (getForkVersion() == 1 || getForkVersion() == 2)
+  if (getForkVersion() == 1 || getForkVersion() == 2 || getForkVersion() == 3)
     ftl = m_currency.blockFutureTimeLimit_v1();
   if (b.timestamp > get_adjusted_time() + ftl) {
     logger(INFO, BRIGHT_WHITE) <<
@@ -2028,6 +2036,7 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
   m_upgradeDetectorV4.blockPushed();
   m_upgradeDetectorV5.blockPushed();
   m_upgradeDetectorV6.blockPushed();
+  m_upgradeDetectorV7.blockPushed();
   update_next_comulative_size_limit();
 
   return true;
@@ -2120,6 +2129,7 @@ void Blockchain::popBlock(const Crypto::Hash& blockHash) {
   m_upgradeDetectorV4.blockPopped();
   m_upgradeDetectorV5.blockPopped();
   m_upgradeDetectorV6.blockPopped();
+  m_upgradeDetectorV7.blockPopped();
 }
 
 bool Blockchain::pushTransaction(BlockEntry& block, const Crypto::Hash& transactionHash, TransactionIndex transactionIndex) {
@@ -2364,7 +2374,7 @@ bool Blockchain::getLowerBound(uint64_t timestamp, uint64_t startOffset, uint32_
   assert(startOffset < m_blocks.size());
 
   uint64_t ftl = m_currency.blockFutureTimeLimit();
-  if (getForkVersion() == 1 || getForkVersion() == 2)
+  if (getForkVersion() == 1 || getForkVersion() == 2 || getForkVersion() == 3)
     ftl = m_currency.blockFutureTimeLimit_v1();
 
   auto bound = std::lower_bound(m_blocks.begin() + startOffset, m_blocks.end(), timestamp - ftl,

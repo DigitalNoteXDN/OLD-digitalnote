@@ -65,7 +65,8 @@ bool Currency::init() {
     m_upgradeHeightV3 = static_cast<uint32_t>(-1);
     m_upgradeHeightV4 = static_cast<uint32_t>(-1);
     m_upgradeHeightV5 = static_cast<uint32_t>(-1);
-	m_upgradeHeightV6 = static_cast<uint32_t>(-1);
+	  m_upgradeHeightV6 = static_cast<uint32_t>(-1);
+    m_upgradeHeightV7 = static_cast<uint32_t>(-1);
     m_blocksFileName = "testnet_" + m_blocksFileName;
     m_blocksCacheFileName = "testnet_" + m_blocksCacheFileName;
     m_blockIndexesFileName = "testnet_" + m_blockIndexesFileName;
@@ -106,14 +107,19 @@ bool Currency::generateGenesisBlock() {
 
 uint64_t Currency::baseRewardFunction(uint64_t alreadyGeneratedCoins, uint32_t height) const {
 	uint64_t base_reward;
-	if (height < parameters::UPGRADE_HEIGHT_V6)
+	if (height < parameters::UPGRADE_HEIGHT_V6) {
 		base_reward = START_BLOCK_REWARD >> (static_cast<uint64_t>(height) / REWARD_HALVING_INTERVAL);
-	else
-	{
+    base_reward = (std::max)(base_reward, MIN_BLOCK_REWARD);
+  }
+  else if (parameters::UPGRADE_HEIGHT_V7 < height) {
+    base_reward = SWAP_BLOCK_REWARD;
+    base_reward = (std::max)(base_reward, SWAP_BLOCK_REWARD);
+  }
+	else {
 		uint64_t shift = static_cast<uint64_t>(height) / REWARD_HALVING_INTERVAL;
 		base_reward = shift >= 64 ? 0 : START_BLOCK_REWARD >> shift;
+    base_reward = (std::max)(base_reward, MIN_BLOCK_REWARD);
 	}
-	base_reward = (std::max)(base_reward, MIN_BLOCK_REWARD);
 	base_reward = (std::min)(base_reward, m_moneySupply - alreadyGeneratedCoins);
 	return base_reward;
 }
@@ -137,6 +143,8 @@ uint32_t Currency::upgradeHeight(uint8_t majorVersion) const {
     return m_upgradeHeightV5;
   } else if (majorVersion == BLOCK_MAJOR_VERSION_6) {
     return m_upgradeHeightV6;
+  } else if (majorVersion == BLOCK_MAJOR_VERSION_7) {
+    return m_upgradeHeightV7;
   } else {
     return static_cast<uint32_t>(-1);
   }
@@ -586,6 +594,11 @@ difficulty_type Currency::nextDifficulty(std::vector<uint64_t> timestamps,
 		return 114291115;
 	}
 
+  // Hardcode difficulty back to a low reset for block 984206 continuing 61 blocks after fork height: 
+  if (height >= parameters::UPGRADE_HEIGHT_V7 && height <= parameters::UPGRADE_HEIGHT_V7 + N) {
+    return 1000000; // low diff reset for swap fork
+  }
+
 	// TS and CD vectors must be size N+1 after startup, and element N is most recent block.
 
 	// If coin is starting, this will be activated.
@@ -678,6 +691,7 @@ bool Currency::checkProofOfWork(Crypto::cn_context& context, const Block& block,
   case BLOCK_MAJOR_VERSION_4:
   case BLOCK_MAJOR_VERSION_5:
   case BLOCK_MAJOR_VERSION_6:
+  case BLOCK_MAJOR_VERSION_7:
     return checkProofOfWorkV2(context, block, currentDiffic, proofOfWork);
   }
 
@@ -757,6 +771,7 @@ CurrencyBuilder::CurrencyBuilder(Logging::ILogger& log) : m_currency(log) {
   upgradeHeightV4(parameters::UPGRADE_HEIGHT_V4);
   upgradeHeightV5(parameters::UPGRADE_HEIGHT_V5);
   upgradeHeightV6(parameters::UPGRADE_HEIGHT_V6);
+  upgradeHeightV7(parameters::UPGRADE_HEIGHT_V7);
   upgradeVotingThreshold(parameters::UPGRADE_VOTING_THRESHOLD);
   upgradeVotingWindow(parameters::UPGRADE_VOTING_WINDOW);
   upgradeWindow(parameters::UPGRADE_WINDOW);

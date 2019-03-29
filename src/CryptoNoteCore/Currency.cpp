@@ -596,7 +596,7 @@ difficulty_type Currency::nextDifficulty(std::vector<uint64_t> timestamps,
 
   // Hardcode difficulty back to a low reset for block 984206 continuing 61 blocks after fork height: 
   if (height >= parameters::UPGRADE_HEIGHT_V7 && height <= parameters::UPGRADE_HEIGHT_V7 + N) {
-    return 1000000; // low diff reset for swap fork
+    return 10000; // low diff reset for swap fork
   }
 
 	// TS and CD vectors must be size N+1 after startup, and element N is most recent block.

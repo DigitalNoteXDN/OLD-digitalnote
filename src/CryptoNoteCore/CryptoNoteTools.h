@@ -32,7 +32,7 @@ bool toBinaryArray(const T& object, BinaryArray& binaryArray) {
 }
 
 template<>
-bool toBinaryArray(const BinaryArray& object, BinaryArray& binaryArray); 
+bool toBinaryArray(const BinaryArray& object, BinaryArray& binaryArray);
 
 template<class T>
 BinaryArray toBinaryArray(const T& object) {
@@ -107,6 +107,7 @@ Crypto::Hash getObjectHash(const T& object) {
   return hash;
 }
 
+uint64_t getInputAmount(const Transaction& transaction);
 std::vector<uint64_t> getInputsAmounts(const Transaction& transaction);
 uint64_t getOutputAmount(const Transaction& transaction);
 void decomposeAmount(uint64_t amount, uint64_t dustThreshold, std::vector<uint64_t>& decomposedAmounts);

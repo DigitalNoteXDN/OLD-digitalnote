@@ -24,6 +24,7 @@
 #include "CryptoNoteCore/BlockchainMessages.h"
 
 #include <Logging/LoggerMessage.h>
+#include <vector>
 
 namespace CryptoNote {
 

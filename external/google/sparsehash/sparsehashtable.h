@@ -92,7 +92,7 @@
 //
 // The value type is required to be copy constructible and default
 // constructible, but it need not be (and commonly isn't) assignable.
-
+#pragma  once
 #ifndef _SPARSEHASHTABLE_H_
 #define _SPARSEHASHTABLE_H_
 

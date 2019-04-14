@@ -9,8 +9,8 @@
 using namespace CryptoNote;
 
 namespace {
-
-const uint64_t LEVIN_SIGNATURE = 0x0101010101012101LL;  //Bender's nightmare
+// change Levini signature to avoid connection on old chain
+const uint64_t LEVIN_SIGNATURE = 0x0101010101112101LL;  //Bender's nightmare
 const uint32_t LEVIN_PACKET_REQUEST = 0x00000001;
 const uint32_t LEVIN_PACKET_RESPONSE = 0x00000002;
 const uint32_t LEVIN_DEFAULT_MAX_PACKET_SIZE = 100000000;      //100MB by default

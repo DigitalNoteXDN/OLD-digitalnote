@@ -5,6 +5,6 @@
 
 #include "InterruptedException.h"
 
-namespace {
+namespace System {
 char suppressMSVCWarningLNK4221;
 }

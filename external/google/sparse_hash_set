@@ -85,7 +85,7 @@
 //
 // See /usr/(local/)?doc/sparsehash-*/sparse_hash_set.html
 // for information about how to use this class.
-
+#pragma  once
 #ifndef _SPARSE_HASH_SET_H_
 #define _SPARSE_HASH_SET_H_
 

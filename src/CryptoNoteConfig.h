@@ -45,7 +45,8 @@ const size_t   DIFFICULTY_CUT                                = 30;  // timestamp
 const size_t   DIFFICULTY_LAG                                = 15;  // not used in LWMA-2
 static_assert(2 * DIFFICULTY_CUT <= DIFFICULTY_WINDOW - 2, "Bad DIFFICULTY_WINDOW or DIFFICULTY_CUT");
 
-const uint64_t DEPOSIT_MIN_AMOUNT                            = 150 * COIN;
+const uint64_t DEPOSIT_MIN_AMOUNT                            = 7000000000 * COIN;
+// disable staking on old chain
 const uint32_t DEPOSIT_MIN_TERM                              = 11000;
 const uint32_t DEPOSIT_MAX_TERM                              = 10 * 12 * 11000;
 const uint64_t DEPOSIT_MIN_TOTAL_RATE_FACTOR                 = 77000;
@@ -114,8 +115,8 @@ const uint8_t  BLOCK_MINOR_VERSION_1                         =  1;
 const size_t   BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT        =  10000;  //by default, blocks ids count in synchronizing
 const size_t   BLOCKS_SYNCHRONIZING_DEFAULT_COUNT            =  128;    //by default, blocks count in blocks downloading
 const size_t   COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT         =  1000;
-
-const int      P2P_DEFAULT_PORT                              = 42080;
+// change binding port
+const int      P2P_DEFAULT_PORT                              = 42090;
 const int      RPC_DEFAULT_PORT                              = 42081;
 
 const size_t   P2P_LOCAL_WHITE_PEERLIST_LIMIT                =  1000;
@@ -133,6 +134,7 @@ const uint64_t P2P_DEFAULT_INVOKE_TIMEOUT                    = 60 * 2 * 1000; //
 const size_t   P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT          = 5000;          // 5 seconds
 const char     P2P_STAT_TRUSTED_PUB_KEY[]                    = "85ae8734f90bc1ee295ceb0ec05a49852d4dbbc9d1c27a619b5f4bdf26a0196e";
 
+// change binding port
 const std::initializer_list<const char*> SEED_NODES = {
   "199.175.54.187:42080",
   "seed2.digitalnote.biz:42080",
@@ -201,4 +203,5 @@ const std::map<const uint32_t, const uint8_t> Version = {
 
 } // CryptoNote
 
+//no dangerous command
 #define ALLOW_DEBUG_COMMANDS

@@ -727,11 +727,11 @@ namespace CryptoNote
           handshakeContext.interrupt();
           logger(DEBUGGING) << "Handshake with " << na << " timed out, interrupt it";
         });
-
+/*
         if (!handshakeContext.get()) {
           logger(WARNING) << "Failed to HANDSHAKE with peer " << na;
           return false;
-        }
+      } */
       } catch (System::InterruptedException&) {
         logger(DEBUGGING) << "Handshake timed out";
         return false;

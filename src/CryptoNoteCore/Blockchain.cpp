@@ -879,7 +879,7 @@ difficulty_type Blockchain::get_next_difficulty_for_alternative_chain(const std:
   std::vector<uint64_t> timestamps;
   std::vector<difficulty_type> commulative_difficulties;
   uint8_t version = getForkVersion();
-  size_t difficultyBlocksCount;
+  size_t difficultyBlocksCount = 0;
   auto height = getCurrentBlockchainHeight();
 
   if (version == 0) {
@@ -1787,9 +1787,14 @@ bool Blockchain::getBlockCumulativeSize(const Block& block, size_t& cumulativeSi
 // Precondition: m_blockchain_lock is locked.
 bool Blockchain::update_next_comulative_size_limit() {
   size_t blockGrantedFullRewardZone =
-    get_block_major_version_for_height(getCurrentBlockchainHeight()) < parameters::UPGRADE_HEIGHT_V4 ?
-    parameters::CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1 :
-    m_currency.blockGrantedFullRewardZone();
+      /* get_block_major_version_for_height(getCurrentBlockchainHeight()) < parameters::UPGRADE_HEIGHT_V4 ?
+         that was the bug limitin Tx size. Compared Block number to zone number. That was always true
+         Try rewrting to: */
+         getCurrentBlockchainHeight() < parameters::UPGRADE_HEIGHT_V4 ?
+      // that' should work, or I hope so.
+
+       parameters::CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1 :
+       m_currency.blockGrantedFullRewardZone();
 
   std::vector<size_t> sz;
   get_last_n_blocks_sizes(sz, m_currency.rewardBlocksWindow());
